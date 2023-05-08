@@ -1,20 +1,20 @@
 <?php if(!defined('IN_PHPVMS') && IN_PHPVMS !== true) { die(); } ?>
-<h3>VA Stats:</h3>
+<h3>虚航统计:</h3>
 <table width="100%">
 	<tr>
 	<td valign="top" width="33%" nowrap="nowrap">		
-		<strong>Users Online: </strong><?php echo count(StatsData::UsersOnline()); ?><br />
-		<strong>Guests Online: </strong><?php echo count(StatsData::GuestsOnline()); ?>
+		<strong>在线用户: </strong><?php echo count(StatsData::UsersOnline()); ?><br />
+		<strong>在线访客: </strong><?php echo count(StatsData::GuestsOnline()); ?>
 	</td>
 	<td valign="top" width="33%" nowrap="nowrap" >
-		<strong>Total Pilots: </strong><?php echo StatsData::PilotCount(); ?><br />
-		<strong>Total Flights: </strong><?php echo StatsData::TotalFlights(); ?><br />
-		<strong>Total Hours Flown: </strong><?php echo StatsData::TotalHours(); ?>
+		<strong>总飞行员: </strong><?php echo StatsData::PilotCount(); ?><br />
+		<strong>总航班数: </strong><?php echo StatsData::TotalFlights(); ?><br />
+		<strong>总小时数: </strong><?php echo StatsData::TotalHours(); ?>
 	</td>
 	<td valign="top" width="33%" nowrap="nowrap" >
-		<strong>Miles Flown: </strong><?php echo StatsData::TotalMilesFlown(); ?><br />
-		<strong>Total Schedules: </strong><?php echo StatsData::TotalSchedules(); ?><br />
-		<strong>Flights Today: </strong><?php echo StatsData::TotalFlightsToday();?>
+		<strong>里程数: </strong><?php echo StatsData::TotalMilesFlown(); ?><br />
+		<strong>总班次: </strong><?php echo StatsData::TotalSchedules(); ?><br />
+		<strong>今日航班: </strong><?php echo StatsData::TotalFlightsToday();?>
 	</td>
 	</tr>
 </table>
@@ -22,7 +22,7 @@
 MainController::Run('Dashboard', 'CheckInstallFolder');
 echo $updateinfo;
 ?>
-<h3>Pilot Reports for the Past Week</h3>
+<h3>上周以来的飞行员报告</h3>
 <div align="center" style="width=98%">
 	<div id="reportcounts" align="center" width="400px" >
 	<img src="<?php echo fileurl('/lib/images/loading.gif');?>" /><br /><br />
@@ -37,10 +37,10 @@ if(Config::Get('VACENTRAL_ENABLED') == true && $unexported_count > 0)
 	<a href="<?php echo adminurl('/vacentral/sendqueuedpireps'); ?>">Click here to send them</a> </p>
 <?php
 } ?>
-<h3 style="margin-bottom: 0px;">Latest News</h3>
+<h3 style="margin-bottom: 0px;">最新新闻</h3>
 	<div style="overflow: auto; height: 400px; border: 1px solid #f5f5f5; margin-bottom: 20px; padding: 7px; padding-top: 0px; padding-bottom: 20px;">
 	<?php echo $phpvms_news; ?>
-	<p><a href="http://www.phpvms.net" target="_new">View All News</a></p>
+	<p><a href="http://www.phpvms.net" target="_new">查看所有新闻</a></p>
 	</div>
 </td>
 <?php

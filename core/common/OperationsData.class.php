@@ -376,6 +376,7 @@ class OperationsData extends CodonData {
         'enabled'=>$this->post->enabled);*/
 
         $data['icao'] = DB::escape(strtoupper($data['icao']));
+		$data['airline'] = DB::escape(strtoupper($data['airline']));
         $data['name'] = DB::escape(strtoupper($data['name']));
         $data['registration'] = DB::escape(strtoupper($data['registration']));
 
@@ -396,6 +397,7 @@ class OperationsData extends CodonData {
             $data['ranklevel'] = RanksData::getRankLevel($data['minrank']);
         } else {
             $data['ranklevel'] = '0';
+            $data['minrank'] = '0';
         }
 
         $cols = array();
@@ -415,6 +417,18 @@ class OperationsData extends CodonData {
 				({$cols}) VALUES ({$col_values})";
 
         $res = DB::query($sql);
+		
+		/* $sql = "INSERT INTO ".TABLE_PREFIX."aircraft (
+					`icao`, `airline`, `name`, `fullname`, `registration`, `downloadlink`,
+					`imagelink`, `range`, `weight`, `cruise`, 
+					`maxpax`, `maxcargo`, `minrank`, `ranklevel`, `enabled`)
+				VALUES (
+					'{$data['icao']}', '{$data['airline']}', '{$data['name']}', '{$data['fullname']}', '{$data['registration']}', 
+					'{$data['downloadlink']}', '{$data['imagelink']}', '{$data['range']}', '{$data['weight']}', 
+					'{$data['cruise']}', '{$data['maxpax']}', '{$data['maxcargo']}', {$data['minrank']}, 
+					{$rank_level}, {$data['enabled']})";
+		
+		$res = DB::query($sql); */
 
         if (DB::errno() != 0) return false;
 
@@ -432,6 +446,7 @@ class OperationsData extends CodonData {
     public static function editAircraft($data) {
         
         $data['icao'] = DB::escape(strtoupper($data['icao']));
+		$data['airline'] = DB::escape(strtoupper($data['airline']));
         $data['name'] = DB::escape(strtoupper($data['name']));
         $data['registration'] = DB::escape(strtoupper($data['registration']));
 
@@ -463,7 +478,7 @@ class OperationsData extends CodonData {
         $sql .= " WHERE `id`={$data['id']}";
 
         /*$sql = "UPDATE " . TABLE_PREFIX."aircraft
-        SET `icao`='{$data['icao']}', `name`='{$data['name']}', `fullname`='{$data['fullname']}',
+        SET `icao`='{$data['icao']}', `airline`='{$data['airline']}', `name`='{$data['name']}', `fullname`='{$data['fullname']}',
         `registration`='{$data['registration']}', `downloadlink`='{$data['downloadlink']}', 
         `imagelink`='{$data['imagelink']}', `range`='{$data['range']}', `weight`='{$data['weight']}',
         `cruise`='{$data['cruise']}', `maxpax`='{$data['maxpax']}', `maxcargo`='{$data['maxcargo']}',
@@ -628,6 +643,28 @@ class OperationsData extends CodonData {
         CodonCache::delete('all_airports');
         return true;
     }
+
+    public static function getAllAircraftSingle($onlyenabled = false) {
+        if ($onlyenabled == true) {
+            $sql = "SELECT * FROM ".TABLE_PREFIX."aircraft a
+                 LEFT JOIN ".TABLE_PREFIX."ranks r ON r.rankid = a.minrank
+                 WHERE enabled = 1
+                 GROUP BY(a.icao)
+                 ORDER BY a.icao ASC";
+        } else {
+            $sql = "SELECT * FROM ".TABLE_PREFIX."aircraft a
+                 LEFT JOIN ".TABLE_PREFIX."ranks r ON r.rankid = a.minrank
+                 GROUP BY(a.icao)
+                 ORDER BY a.icao ASC";
+        }
+
+        $all_aircraft = DB::get_results($sql);
+        if(!$all_aircraft) {
+                $all_aircraft = array();
+        }
+        
+        return $all_aircraft;
+    }
     
     public static function deleteAllAirports() {
         $sql = 'DELETE FROM ' . TABLE_PREFIX . 'airports';
@@ -682,7 +719,12 @@ class OperationsData extends CodonData {
     public static function RetrieveAirportInfo($icao) {
         $icao = strtoupper($icao);
 
-        $url = Config::Get('PHPVMS_API_SERVER') . '/index.php/airport/get/' . $icao;
+        if (Config::Get('AIRPORT_LOOKUP_SERVER') == 'geonames') {
+            $url = Config::Get('GEONAME_API_SERVER') .
+                '/searchJSON?maxRows=1&style=medium&featureCode=AIRP&type=json&q=' . $icao;
+        } elseif (Config::Get('AIRPORT_LOOKUP_SERVER') == 'phpvms') {
+            $url = Config::Get('PHPVMS_API_SERVER') . '/index.php/airport/get/' . $icao;
+        }
 
         # Updated to use CodonWebServer instead of simplexml_load_url() straight
         #	Could cause errors
@@ -693,7 +735,9 @@ class OperationsData extends CodonData {
         if ($reader->totalResultsCount == 0 || !$reader) {
             return false;
         } else {
-            if (isset($reader->airports)) {
+            if (isset($reader->geonames)) {
+                $apt = $reader->geonames[0];
+            } elseif (isset($reader->airports)) {
                 $apt = $reader->airports[0];
             }
 

@@ -29,7 +29,7 @@ class FinanceData extends CodonData {
 
         # $ 50.00 - If positive
         # ($ -50.00)  - If negative
-        $number = Config::Get('MONEY_UNIT') . ' ' . number_format($number, 2, '.', ', ');
+        $number = number_format($number, 2, '.', ', ') . Config::Get('MONEY_UNIT');
 
         if ($isneg == true) $number = '(' . $number . ')';
 

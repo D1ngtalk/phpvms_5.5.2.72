@@ -37,10 +37,10 @@ Template::Show('core_htmlreq.php');
 	Template::Show('core_sidebar.php');
 	?>
 	
-	<h3 >Options</h3>
+	<h3 >选项</h3>
 	<ul class="menu" style="padding: 0px">
 		<li><a href="<?php echo SITE_URL?>/admin/index.php/dashboard" class="menu">
-				<img src="<?php echo SITE_URL?>/admin/lib/layout/images/dashboard_icon.png" />Dashboard
+				<img src="<?php echo SITE_URL?>/admin/lib/layout/images/dashboard_icon.png" />控制台
 			</a>
 		</li>
 	</ul>
@@ -50,8 +50,8 @@ Template::Show('core_htmlreq.php');
 	?>
 	</ul>
 	<ul class="menu">
-		<li><a style="border-top: none" href="<?php echo SITE_URL?>/index.php">View Your Site</a></li>
-		<li><a href="<?php echo SITE_URL?>/index.php/Login/logout">Log Out</a></li>
+		<li><a style="border-top: none" href="<?php echo SITE_URL?>/index.php">回到网站</a></li>
+		<li><a href="<?php echo SITE_URL?>/index.php/Login/logout">退出登录</a></li>
 	</ul>
 		
   </div>

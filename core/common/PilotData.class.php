@@ -893,7 +893,7 @@ class PilotData extends CodonData {
      * @return bool Success
      */
     public static function generateSignature($pilotid) {
-
+        return false;
         $pilot = self::getPilotData($pilotid);
         $pilotcode = self::getPilotCode($pilot->code, $pilot->pilotid);
 

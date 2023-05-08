@@ -233,7 +233,8 @@ class Util
 	{
 		ob_start();
 		# PHPMailer
-		include_once(SITE_ROOT.'/core/lib/phpmailer/class.phpmailer.php');
+		require_once(SITE_ROOT.'/core/lib/phpmailer/class.phpmailer.php');
+		require_once(SITE_ROOT.'/core/lib/phpmailer/class.smtp.php');
 		$mail = new PHPMailer();
 
 		if($fromemail == '') {

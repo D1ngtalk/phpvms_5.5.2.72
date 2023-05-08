@@ -27,6 +27,28 @@
 	<p>The maximum cargo load of this aircraft in <?php echo Config::Get('CARGO_UNITS'); ?>, for cargo flights</p>
 </dd>
 
+<dt>Select Airline</dt>
+<dd>
+    <select name="airline">
+        <option value="" selected disabled>Select Airline</option>
+        <?php
+       	
+        $allairlines = OperationsData::getAllAirlines(true);
+        foreach($allairlines as $airline)
+        {
+            $airlineicao = $_GET['icao'];
+            if($airlineicao == $airline->code)
+                $sel = 'selected="selected"';
+            else
+                $sel = '';
+            
+            echo "<option value=\"{$airline->code}\" {$sel} >{$airline->code} - {$airline->name}</option>";
+        }
+        ?>
+    </select>
+
+</dd>
+
 <dt>Link to download aircraft</dt>
 <dd><input name="downloadlink" type="text"  value="<?php echo $aircraft->downloadlink; ?>" /></dd>
 

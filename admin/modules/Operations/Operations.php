@@ -171,6 +171,30 @@ class Operations extends CodonModule {
     }
 
     /**
+     * Operations::getfuelprice()
+     * 
+     * @return
+     */
+    public function getfuelprice() {
+        
+        if (Config::Get('FUEL_GET_LIVE_PRICE') == false) {
+            echo '<span style="color: red">Live fuel pricing is disabled!</span>';
+            return;
+        }
+
+        $icao = $_GET['icao'];
+        $price = FuelData::get_from_server($icao);
+
+        if (is_bool($price) && $price === false) {
+            echo '<span style="color: red">Live fuel pricing is not available for this airport</span>';
+            return;
+        }
+
+        echo '<span style="color: #33CC00">OK! Found - current price: <strong>' . $price .
+            '</strong></span>';
+    }
+
+    /**
      * Operations::findairport()
      * 
      * @return
@@ -756,7 +780,8 @@ class Operations extends CodonModule {
             'weight' => $this->post->weight, 
             'cruise' => $this->post->cruise,
             'maxpax' => $this->post->maxpax, 
-            'maxcargo' => $this->post->maxcargo, 
+            'maxcargo' => $this->post->maxcargo,
+			'airline'=>$this->post->airline, 
             'minrank' => $this->post->minrank, 
             'enabled' => $this->post->enabled
             );
@@ -816,7 +841,7 @@ class Operations extends CodonModule {
             'fullname' => $this->post->fullname, 'registration' => $this->post->registration,
             'downloadlink' => $this->post->downloadlink, 'imagelink' => $this->post->imagelink,
             'range' => $this->post->range, 'weight' => $this->post->weight, 'cruise' => $this->post->cruise,
-            'maxpax' => $this->post->maxpax, 'maxcargo' => $this->post->maxcargo, 'minrank' =>
+            'maxpax' => $this->post->maxpax, 'maxcargo' => $this->post->maxcargo, 'airline' => $this->post->airline, 'minrank' =>
             $this->post->minrank, 'enabled' => $this->post->enabled);
 
         OperationsData::EditAircraft($data);

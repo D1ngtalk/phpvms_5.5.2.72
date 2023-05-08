@@ -158,7 +158,6 @@ class PIREPS extends CodonModule {
         $this->set('comments', PIREPData::GetComments($pirepid));
 
         $this->render('pirep_viewreport.tpl');
-        $this->render('route_map.tpl');
     }
 
     /**

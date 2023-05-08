@@ -18,6 +18,23 @@
  */
 
 class StatsData extends CodonData {
+
+    public static function TotalPilotMiles($pilotid) {
+        $key = 'total_miles';
+        $key .= '_'.$pilotid;
+
+        $total = CodonCache::read($key);
+
+        if($total === false) {
+            $total = 0;
+            $sql = "SELECT * FROM ".TABLE_PREFIX."pireps WHERE pilotid='$pilotid' AND accepted=1";
+            $results = DB::get_results($sql);
+            if($results) { foreach($results as $result) { $total += $result->distance; } }
+
+            CodonCache::write($key, $total, '15minute');
+        }
+        return $total;
+    }
     
     /**
      * Return the total from a table given the conditions specified

@@ -18,42 +18,42 @@
  */
 
 class PIREPData extends CodonData {
-    
+
     public static $lasterror;
     public static $pirepid;
 
 
     /**
      * A generic find function for schedules. As parameters, do:
-     * 
+     *
      * $params = array( 's.depicao' => 'value',
      *					's.arricao' => array ('multiple', 'values'),
      *	);
-     * 
+     *
      * Syntax is ('s.columnname' => 'value'), where value can be
-     *	an array is multiple values, or with a SQL wildcard (%) 
+     *	an array is multiple values, or with a SQL wildcard (%)
      *  if that's what is desired.
-     * 
+     *
      * Columns from the schedules table should be prefixed by 's.',
      * the aircraft table as 'a.'
-     * 
-     * You can also pass offsets ($start and $count) in order to 
+     *
+     * You can also pass offsets ($start and $count) in order to
      * facilitate pagination
-     * 
+     *
      * @tutorial http://docs.phpvms.net/media/development/searching_and_retriving_schedules
      */
     public static function findPIREPS($params, $count = '', $start = '') {
-        
-        $sql = 'SELECT p.*, UNIX_TIMESTAMP(p.submitdate) as submitdate, 
-                    UNIX_TIMESTAMP(p.modifieddate) as modifieddate, 
+
+        $sql = 'SELECT p.*, UNIX_TIMESTAMP(p.submitdate) as submitdate,
+                    UNIX_TIMESTAMP(p.modifieddate) as modifieddate,
 					u.pilotid, u.firstname, u.lastname, u.email, u.rank, u.code AS pcode,
 					a.id AS aircraftid, a.name as aircraft, a.registration,
 					dep.name as depname, dep.lat AS deplat, dep.lng AS deplng,
-					arr.name as arrname, arr.lat AS arrlat, arr.lng AS arrlng						
+					arr.name as arrname, arr.lat AS arrlat, arr.lng AS arrlng
 				FROM ' . TABLE_PREFIX . 'pireps p
 				LEFT JOIN ' . TABLE_PREFIX . 'aircraft a ON a.id = p.aircraft
 				LEFT JOIN ' . TABLE_PREFIX . 'airports AS dep ON dep.icao = p.depicao
-				LEFT JOIN ' . TABLE_PREFIX . 'airports AS arr ON arr.icao = p.arricao 
+				LEFT JOIN ' . TABLE_PREFIX . 'airports AS arr ON arr.icao = p.arricao
 				LEFT JOIN ' . TABLE_PREFIX . 'pilots u ON u.pilotid = p.pilotid ';
 
         /* Build the select "WHERE" based on the columns passed */
@@ -84,7 +84,7 @@ class PIREPData extends CodonData {
      *
      */
     public static function getIntervalDataByMonth($where_params, $interval = '6') {
-        
+
         $date_clause = "DATE_SUB(NOW(), INTERVAL {$interval} MONTH) <= p.submitdate";
 
         /* See if this array already exists */
@@ -117,7 +117,7 @@ class PIREPData extends CodonData {
      *
      */
     public static function getIntervalDataByDays($where_params, $interval = '7') {
-        
+
         $date_clause = "DATE_SUB(CURDATE(), INTERVAL {$interval} DAY)  <= p.submitdate";
 
         /* See if this array already exists */
@@ -134,9 +134,9 @@ class PIREPData extends CodonData {
     /**
      * Get interval financial data, with the date clause
      * passed in as a WHERE:
-     * 
+     *
      * "DATE_SUB(CURDATE(), INTERVAL {$interval} DAY)  <= p.submitdate";
-     * 
+     *
      * Or some form of a date limitation, but has to be within the
      * where clause
      *
@@ -146,7 +146,7 @@ class PIREPData extends CodonData {
      *
      */
     public static function getIntervalData($where_params, $grouping = 'M') {
-        
+
         $grouping = strtolower($grouping);
 
         if ($grouping == 'y') {
@@ -165,9 +165,9 @@ class PIREPData extends CodonData {
 					SUM(p.fuelprice) as fuelprice,
 					SUM(p.price) as price,
 					SUM(p.expenses) as expenses,
-					(SELECT SUM(`amount`) 
+					(SELECT SUM(`amount`)
                         FROM `".TABLE_PREFIX."ledger`
-                        WHERE DATE_FORMAT(submitdate, '{$format}') 
+                        WHERE DATE_FORMAT(submitdate, '{$format}')
                             AND `paysource` = ".PAYSOURCE_PIREP."
                     ) AS `pilotpay`
 				FROM " . TABLE_PREFIX . "pireps p";
@@ -185,7 +185,7 @@ class PIREPData extends CodonData {
      * count for pagination. Returns 20 rows by default. If you
      * only want to return the latest n number of reports, use
      * getRecentReportsByCount()
-     * 
+     *
      * @param int $count Number of PIREPS to return
      * @param int $start The record # to start from (for pagination)
      * @return array List of PIREPs
@@ -197,8 +197,8 @@ class PIREPData extends CodonData {
     /**
      * Get all of the reports by the accepted status. Use the constants:
      * PIREP_PENDING, PIREP_ACCEPTED, PIREP_REJECTED,PIREP_INPROGRESS
-     * 
-     * @param int $accepted 
+     *
+     * @param int $accepted
      */
     public static function getAllReportsByAccept($accepted = 0) {
         return self::findPIREPS(array('p.accepted' => $accept));
@@ -206,7 +206,7 @@ class PIREPData extends CodonData {
 
     /**
      * PIREPData::getAllReportsFromHub()
-     * 
+     *
      * @param string $hub
      * @param integer $accepted
      * @return array All of the PIREPs for this hub
@@ -218,11 +218,11 @@ class PIREPData extends CodonData {
     /**
      * Get the latest reports that have been submitted,
      * return the last 10 by default
-     * 
+     *
      * @param int $count Number of PIREPs to return
      */
     public static function getRecentReportsByCount($count = 10) {
-        
+
         if ($count == '') {
             $count = 10;
         }
@@ -232,7 +232,7 @@ class PIREPData extends CodonData {
 
     /**
      * Get the latest reports by n number of days
-     * 
+     *
      * @param int $days Number of days to return
      */
     public static function getRecentReports($days = 2) {
@@ -256,8 +256,8 @@ class PIREPData extends CodonData {
      *  Pass unix timestamp for the date
      */
     public static function getReportCount($date) {
-        
-        $sql = 'SELECT COUNT(*) AS count 
+
+        $sql = 'SELECT COUNT(*) AS count
 				FROM ' . TABLE_PREFIX . 'pireps
 				WHERE DATE(submitdate)=DATE(FROM_UNIXTIME(' . $date . '))';
 
@@ -269,14 +269,14 @@ class PIREPData extends CodonData {
 
     /**
      * Get the number of reports on a certain date, for a certain route
-     * 
+     *
      * @param string $code Airline code
      * @param string $flightnum Flight number
      * @param timestamp $date UNIX timestamp
      */
     public static function getReportCountForRoute($code, $flightnum, $date) {
         $MonthYear = date('mY', $date);
-        $sql = "SELECT COUNT(*) AS count 
+        $sql = "SELECT COUNT(*) AS count
 				FROM " . TABLE_PREFIX . "pireps
 				WHERE DATE_FORMAT(submitdate, '%c%Y') = '$MonthYear'
 					AND code='$code' AND flightnum='$flightnum'";
@@ -291,11 +291,11 @@ class PIREPData extends CodonData {
      * reports per day
      */
     public static function getCountsForDays($days = 7) {
-        
+
         $sql = 'SELECT DISTINCT(DATE(submitdate)) AS submitdate,
-					(SELECT COUNT(*) FROM '.TABLE_PREFIX.'pireps 
+					(SELECT COUNT(*) FROM '.TABLE_PREFIX.'pireps
                         WHERE DATE(submitdate)=DATE(p.submitdate)) AS count
-				FROM '.TABLE_PREFIX.'pireps p 
+				FROM '.TABLE_PREFIX.'pireps p
                 WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= p.submitdate';
 
         return DB::get_results($sql);
@@ -305,15 +305,15 @@ class PIREPData extends CodonData {
      * Get all of the details for a PIREP, including lat/long of the airports
      */
     public static function getReportDetails($pirepid) {
-        
+
         $sql = 'SELECT p.*, s.*, s.id AS scheduleid, p.route, p.route_details, p.rawdata,
 					u.pilotid, u.firstname, u.lastname, u.email, u.rank, u.code AS pcode,
 					dep.name as depname, dep.lat AS deplat, dep.lng AS deplng,
 					arr.name as arrname, arr.lat AS arrlat, arr.lng AS arrlng,
 				    p.code, p.flightnum, p.depicao, p.arricao,  p.price AS price,
 				    a.id as aircraftid, a.name as aircraft, a.registration, p.flighttime,
-				    p.distance, 
-                    UNIX_TIMESTAMP(p.submitdate) as submitdate, 
+				    p.distance,
+                    UNIX_TIMESTAMP(p.submitdate) as submitdate,
                     UNIX_TIMESTAMP(p.modifieddate) as modifieddate,
                     p.accepted, p.log
 				FROM '.TABLE_PREFIX.'pilots u, '.TABLE_PREFIX.'pireps p
@@ -330,11 +330,11 @@ class PIREPData extends CodonData {
 
         /* Do any specific replacements here */
         if ($row) {
-            
+
             /* If it's FSFlightKeeper, process the `rawdata` column, which contains
                 array()'d copied of extra data that was sent by the ACARS. Run that
                 through some templates which we've got. This can probably be generic-ized
-                but it's fine now for FSFK. This can probably move through an outside 
+                but it's fine now for FSFK. This can probably move through an outside
                 function, but seems OK to stay in getReportDetails() for now, since this
                 is semi-intensive code here (the most expensive is populating the templates,
                 and I wouldn't want to run it for EVERY PIREP which is called by the system.
@@ -403,18 +403,18 @@ class PIREPData extends CodonData {
 
     /**
      * Get the latest reports for a pilot
-     * 
+     *
      * @param int $pilotid Pilot ID to retrieve last reports for
      * @param int $count Number of reports to return
-     * @param string $status Status type to return (only accepted, etc) 
+     * @param string $status Status type to return (only accepted, etc)
      * @return
      */
     public static function getLastReports($pilotid, $count = 1, $status = '') {
-        
+
         if($pilotid == '') {
             return false;
         }
-        
+
         $sql = 'SELECT * FROM ' . TABLE_PREFIX . 'pireps
 					WHERE pilotid=' . intval($pilotid);
 
@@ -432,14 +432,14 @@ class PIREPData extends CodonData {
 
     /**
      * Get all of a pilot's reports by status
-     * 
+     *
      * @param int $pilotid The Pilot ID to find
      * @param integer $accept PIREP_PENDING, PIREP_ACCEPTED, PIREP_REJECTED, PIREP_INPROGRESS
      * @return
      */
     public static function getReportsByAcceptStatus($pilotid, $accept = 0) {
         return self::findPIREPS(array(
-            'p.pilotid' => intval($pilotid), 
+            'p.pilotid' => intval($pilotid),
             'p.accepted' => intval($accept)
             )
         );
@@ -449,7 +449,7 @@ class PIREPData extends CodonData {
      * Get the count of comments
      */
     public static function getCommentCount($pirepid) {
-        
+
         $sql = 'SELECT COUNT(*) AS total FROM '.TABLE_PREFIX.'pirepcomments
 					WHERE pirepid=' . $pirepid . '
 					GROUP BY pirepid';
@@ -465,12 +465,12 @@ class PIREPData extends CodonData {
 
     /**
      * Set the export status of PIREPs (vaCentral)
-     * 
+     *
      * @param bool $status
      * @return
      */
     public static function setAllExportStatus($status = true) {
-        
+
         if ($status === true) {
             $status = 1;
         } else {
@@ -490,13 +490,13 @@ class PIREPData extends CodonData {
 
     /**
      * Set the exported status of a specific PIREP
-     * 
+     *
      * @param int $pirepid
      * @param bool $status
      * @return
      */
     public static function setExportedStatus($pirepid, $status) {
-        
+
         if ($status === true) {
             $status = 1;
         } else {
@@ -511,7 +511,7 @@ class PIREPData extends CodonData {
      * Get all of the comments for a pilot report
      */
     public static function getComments($pirepid) {
-        
+
         $sql = 'SELECT c.*, UNIX_TIMESTAMP(c.postdate) as postdate,
 						p.firstname, p.lastname
 					FROM ' . TABLE_PREFIX . 'pirepcomments c, ' . TABLE_PREFIX . 'pilots p
@@ -532,10 +532,10 @@ class PIREPData extends CodonData {
         return true;
     }
 
-    
+
     /**
      * PIREPData::fileReport()
-     * 
+     *
      * @param mixed $pirepdata
      * @return
      */
@@ -571,9 +571,9 @@ class PIREPData extends CodonData {
             }
 
             $sql = "SELECT `pirepid` FROM " . TABLE_PREFIX . "pireps
-					WHERE `pilotid` = {$pirepdata['pilotid']} 
+					WHERE `pilotid` = {$pirepdata['pilotid']}
 						AND `code` = '{$pirepdata['code']}'
-						AND `flightnum` = '{$pirepdata['flightnum']}' 
+						AND `flightnum` = '{$pirepdata['flightnum']}'
 						AND DATE_SUB(NOW(), INTERVAL {$time_limit} MINUTE) <= `submitdate`";
 
             $res = DB::get_row($sql);
@@ -622,8 +622,8 @@ class PIREPData extends CodonData {
 
         /*	Get route information, and also the detailed layout of the route
         Store it cached, in case the schedule changes later, then the route
-        information remains intact. Also, if the nav data changes, then 
-        the route is saved as it was 
+        information remains intact. Also, if the nav data changes, then
+        the route is saved as it was
         */
 
         if (!empty($pirepdata['route'])) {
@@ -654,7 +654,7 @@ class PIREPData extends CodonData {
 
             /*	The schedule doesn't have any route_details, so let's populate
                 the schedule while we're here. Then we'll use that same info
-                to populate our details information 
+                to populate our details information
              */
             if (empty($sched->route_details)) {
                 $pirepdata['route_details'] = serialize(SchedulesData::getRouteDetails($sched->id));
@@ -716,15 +716,15 @@ class PIREPData extends CodonData {
         $cols = array();
         $col_values = array();
         foreach ($pirepdata as $key => $value) {
-            if($key == 'submitdate') {
+            if($key == 'submitdate' or $key == 'modifieddate') {
                 $value = 'NOW()';
             } elseif ($key == 'comment') {
                 continue;
             } else {
                 $value = "'".DB::escape($value)."'";
             }
-            
-            $cols[] = "`{$key}`";        
+
+            $cols[] = "`{$key}`";
             $col_values[] = $value;
         }
 
@@ -753,14 +753,14 @@ class PIREPData extends CodonData {
         PilotData::UpdateLastPIREPDate($pilotinfo->pilotid);
 
         if (Config::Get('EMAIL_SEND_PIREP') === true) {
-            
+
             # Send an email to the admin that a PIREP was submitted
             $sub = "A PIREP has been submitted by {$pilotcode} ({$pirepdata['depicao']} - {$pirepdata['arricao']})";
             $message = "A PIREP has been submitted by {$pilotcode} "
                 ."({$pilotinfo->firstname} {$pilotinfo->lastname})\n\n"
                 ."{$pirepdata['code']}{$pirepdata['flightnum']}: {$pirepdata['depicao']} to {$pirepdata['arricao']}\n"
                 ."Aircraft: {$pirepdata['aircraft']}\n" . "Flight Time: {$pirepdata['flighttime']}\n"
-                ."Landing Rate: {$pirepdata['landingrate']}\n"."Filed using: {$pirepdata['source']}\n\n" 
+                ."Landing Rate: {$pirepdata['landingrate']}\n"."Filed using: {$pirepdata['source']}\n\n"
                 ."Comment: {$comment}\n\n"
                 ."Click to approve this pirep (admin must be signed in):\n"
                 .adminurl('/pirepadmin/approvepirep/'.$pirepid);
@@ -772,13 +772,13 @@ class PIREPData extends CodonData {
 
             Util::SendEmail($email, $sub, $message);
         }
-        
+
         /* Add this into the activity feed */
         $message = Lang::get('activity.new.pirep');
         foreach($pirepdata as $key=>$value) {
             $message = str_replace('$'.$key, $value, $message);
         }
-        
+
         # Add it to the activity feed
         ActivityData::addActivity(array(
             'pilotid' => $pirepdata['pilotid'],
@@ -798,7 +798,7 @@ class PIREPData extends CodonData {
 
     /**
      * Update a specific PIREP
-     * 
+     *
      * @param int $pirepid ID of PIREP to update
      * @param array $pirepdata Dictionary array of fields to update
      * @param bool $recalc_finances Recalculate finances or not (fields must be passed!)
@@ -827,16 +827,16 @@ class PIREPData extends CodonData {
 
         # Recalculate finances if these fields are set...
         if($recalc_finances === true) {
-         
+
             $data = array(
-                'price' => $pirepdata['price'], 
+                'price' => $pirepdata['price'],
                 'load' => $pirepdata['load'],
-                'expenses' => $pirepdata['expenses'], 
+                'expenses' => $pirepdata['expenses'],
                 'fuelprice' => $pirepdata['fuelprice'],
-                'pilotpay' => $pirepdata['pilotpay'], 
-                'flighttime' => $pirepdata['flighttime'], 
+                'pilotpay' => $pirepdata['pilotpay'],
+                'flighttime' => $pirepdata['flighttime'],
             );
-    
+
             $gross = floatval($pirepdata['load']) * floatval($pirepdata['price']);
             $revenue = self::getPIREPRevenue($data, $pirepinfo->paytype);
 
@@ -847,13 +847,13 @@ class PIREPData extends CodonData {
                 )
             );
         }
-        
+
         $pirepdata['modifieddate'] = 'NOW()';
-        
+
         $ret = self::editPIREPFields($pirepid, $pirepdata);
-        
+
         self::calculatePIREPPayment($pirepid);
-        
+
         return $ret;
     }
 
@@ -862,7 +862,7 @@ class PIREPData extends CodonData {
      *
      * @param int $pirepid ID of the PIREP to update
      * @param array $fields Array, column name as key, with values to update
-     * @return bool 
+     * @return bool
      *
      */
     public static function updatePIREPFields($pirepid, $fields) {
@@ -874,17 +874,17 @@ class PIREPData extends CodonData {
      *
      * @param int $pirepid ID of the PIREP to update
      * @param array $fields Array, column name as key, with values to update
-     * @return bool 
+     * @return bool
      *
      */
     public static function editPIREPFields($pirepid, $fields) {
-        
+
         if (!is_array($fields)) {
             return false;
         }
 
         $fields['modifieddate'] = 'NOW()';
-        
+
         $sql = "UPDATE `" . TABLE_PREFIX . "pireps` SET ";
         $sql .= DB::build_update($fields);
         $sql .= ' WHERE `pirepid`=' . $pirepid;
@@ -900,10 +900,10 @@ class PIREPData extends CodonData {
 
     /**
      * Populate PIREPS which have 0 values for the load/price, etc
-     * 
+     *
      */
     public static function populateEmptyPIREPS() {
-        
+
         $sql = 'SELECT * FROM ' . TABLE_PREFIX . 'pireps ';
 
         $results = DB::get_results($sql);
@@ -920,13 +920,13 @@ class PIREPData extends CodonData {
 
     /**
      * Populate the PIREP with the fianancial info needed
-     * 
+     *
      * @param mixed $pirep Either a PIREP ID or the row
      * @param bool $reset_fuel Reset the fuel costs or not?
      * @return
      */
     public static function populatePIREPFinance($pirep, $reset_fuel = false) {
-        
+
         if (!is_object($pirep) && is_numeric($pirep)) {
             $pirep = PIREPData::getReportDetails($pirep);
             if (!$pirep) {
@@ -985,7 +985,7 @@ class PIREPData extends CodonData {
                 $total_ex += $total;
             }
         }
-        
+
         /*  Set the pilotpay here - if it was a per-schedule payment,
             then set the pilot pay to that, otherwise, set it to the
             total amount paid... */
@@ -996,28 +996,28 @@ class PIREPData extends CodonData {
         } else {
             $payment_type = PILOT_PAY_HOURLY;
         }
-        
+
         $data = array(
-            'price' => $sched->price, 
-            'load' => $pirep->load, 
-            'fuelprice' => $pirep->fuelprice, 
-            'expenses' => $total_ex, 
-            'pilotpay' => $pilot->payrate, 
-            'flighttime' =>$pirep->flighttime, 
+            'price' => $sched->price,
+            'load' => $pirep->load,
+            'fuelprice' => $pirep->fuelprice,
+            'expenses' => $total_ex,
+            'pilotpay' => $pilot->payrate,
+            'flighttime' =>$pirep->flighttime,
             );
 
         $revenue = self::getPIREPRevenue($data, $payment_type);
 
         /* Now update the PIREP */
         $fields = array(
-            'price' => $sched->price, 
-            'load' => $pirep->load, 
+            'price' => $sched->price,
+            'load' => $pirep->load,
             'gross' => $gross,
-            'fuelprice' => $pirep->fuelprice, 
+            'fuelprice' => $pirep->fuelprice,
             'fuelunitcost' => $pirep->fuelunitcost,
-            'expenses' => $total_ex, 
+            'expenses' => $total_ex,
             'pilotpay' => $pilot->payrate,
-            'paytype' => $payment_type, 
+            'paytype' => $payment_type,
             'revenue' => $revenue
             );
 
@@ -1030,17 +1030,17 @@ class PIREPData extends CodonData {
 
     /**
      * Calculate the gross revenue of a PIREP
-     * 
+     *
      * @param array $data Associative array with price, load, pilotpay, flighttime
      * @param int $payment_type 1 for hourly payment, 2 for per-schedule payment
      * @return
      */
     public static function getPIREPRevenue($data, $payment_type = PILOT_PAY_HOURLY) {
-        
+
         $gross = $data['price'] * $data['load'];
-        
+
         if($payment_type == PILOT_PAY_HOURLY) {
-            $pilotpay = $data['pilotpay'] * $data['flighttime'];   
+            $pilotpay = $data['pilotpay'] * $data['flighttime'];
         } else {
             $pilotpay = $data['pilotpay'];
         }
@@ -1057,7 +1057,7 @@ class PIREPData extends CodonData {
     /**
      * Delete a flight report and all of its associated data
      * Alias to PIREPData::deleteFlightReport()
-     * 
+     *
      * @param int $pirepid Delete a PIREP
      * @return none
      */
@@ -1067,22 +1067,22 @@ class PIREPData extends CodonData {
 
     /**
      * Delete a flight report and all of its associated data
-     * 
+     *
      * @param int $pirepid Delete a PIREP
      * @return none
      */
     public static function deleteFlightReport($pirepid) {
-        
+
         $pirepid = intval($pirepid);
         $pirep_details = self::getReportDetails($pirepid);
-        
+
         $delete_tables = array(
             'pireps', 'pirepcomments', 'pirepvalues', 'ledger'
         );
-        
+
         foreach($delete_tables as $table) {
             DB::query(
-                'DELETE FROM '.TABLE_PREFIX.$table.' 
+                'DELETE FROM '.TABLE_PREFIX.$table.'
                  WHERE `pirepid`='.intval($pirepid)
             );
         }
@@ -1095,11 +1095,11 @@ class PIREPData extends CodonData {
 
     /**
      * PIREPData::deleteAllRouteDetails()
-     * 
+     *
      * @return
      */
     public static function deleteAllRouteDetails() {
-        
+
         $row = DB::get_row("UPDATE ".TABLE_PREFIX."pireps SET `route_details` = ''");
 
         if (!$row) {
@@ -1111,14 +1111,14 @@ class PIREPData extends CodonData {
 
     /**
      * PIREPData::updatePIREPFeed()
-     * 
+     *
      * @return
      */
     public static function updatePIREPFeed() {
-        
+
         # Load PIREP into RSS feed
         $reports = PIREPData::findPIREPS(array(), 10);
-        
+
         # Empty the rss file if there are no pireps
         if (!$reports) {
             return false;
@@ -1133,9 +1133,9 @@ class PIREPData extends CodonData {
 
         $rss->BuildFeed(LIB_PATH . '/rss/latestpireps.rss');
     }
-    
+
     /**
-     * Return true if a PIREP if under $age_hours old	
+     * Return true if a PIREP if under $age_hours old
      *
      * @param int $pirepid PIREP ID
      * @param int $age_hours The age in hours to see if a PIREP is under
@@ -1143,7 +1143,7 @@ class PIREPData extends CodonData {
      *
      */
     public static function isPIREPUnderAge($pirepid, $age_hours) {
-        
+
         $pirepid = intval($pirepid);
 
         $sql = "SELECT pirepid
@@ -1157,7 +1157,7 @@ class PIREPData extends CodonData {
             return false;
         }
 
-        return true;        
+        return true;
     }
 
     /**
@@ -1165,8 +1165,8 @@ class PIREPData extends CodonData {
      */
 
     public static function appendToLog($pirepid, $log) {
-        
-        $sql = 'UPDATE ' . TABLE_PREFIX . 'pireps 
+
+        $sql = 'UPDATE ' . TABLE_PREFIX . 'pireps
 					SET `log` = CONCAT(`log`, \'' . $log . '\')
 					WHERE `pirepid`=' . $pirepid;
 
@@ -1180,7 +1180,7 @@ class PIREPData extends CodonData {
     /**
      * Get all of the reports for a pilot. Pass the pilot id
      * The ID is their database ID number, not their airline ID number
-     * 
+     *
      * @deprecated Use findPIREPS() instead
      */
     public static function getAllReportsForPilot($pilotid) {
@@ -1190,86 +1190,87 @@ class PIREPData extends CodonData {
     /**
      * Change the status of a PIREP. For the status, use the constants:
      * PIREP_PENDING, PIREP_ACCEPTED, PIREP_REJECTED,PIREP_INPROGRESS
-     * 
+     *
      * Also handle paying the pilot, and handle PIREP rejection, etc
-     * 
+     *
      * @param int $pirepid The PIREP ID of status to change
      * @param int $status Use consts: PIREP_PENDING, PIREP_ACCEPTED, PIREP_REJECTED,PIREP_INPROGRESS
      * @return bool
      */
     public static function changePIREPStatus($pirepid, $status) {
-        
+
         # Look up the status of the PIREP of previous
         $pirep_details = PIREPData::getReportDetails($pirepid);
-        
+
         if(!$pirep_details) {
             return false;
         }
-        
+
         if($pirep_details->accepted == $status) {
             return true;
         }
-        
+
         $ret = self::editPIREPFields($pirepid, array('accepted' => $status));
-        
+
         # Do something if the PIREP was previously marked as pending
         if($pirep_details->accepted == PIREP_PENDING) {
-            
+
             if($status == PIREP_ACCEPTED) {
-                self::calculatePIREPPayment($pirepid);       
+                self::calculatePIREPPayment($pirepid);
                 SchedulesData::changeFlownCount($pirep_details->code, $pirep_details->flightnum, '+1');
-                
+                FltbookData::updateAircraftLocation($pirep_details->aircraftid, $pirep_details->arricao);
+
             } elseif($status == PIREP_REJECTED) {
-                // Do nothing, since nothing in the PIREP was actually counted                
+                // Do nothing, since nothing in the PIREP was actually counted
             }
-            
+
         } elseif($pirep_details->accepted == PIREP_ACCEPTED) { # If already accepted
-        
+
             if($status == PIREP_REJECTED) {
                 LedgerData::deletePaymentByPIREP($pirep_details->pirepid);
                 PilotData::resetPilotPay($pirep_details->pilotpay);
                 SchedulesData::changeFlownCount($pirep_details->code, $pirep_details->flightnum, '-1');
             }
         }
-        
+
         PilotData::updatePilotStats($pirep_details->pilotid);
         RanksData::calculateUpdatePilotRank($pirep_details->pilotid);
         PilotData::generateSignature($pirep_details->pilotid);
         StatsData::updateTotalHours();
-        
+
         return $ret;
     }
-    
+
     /**
      * Add a payment for a PIREP.
-     * 
+     *
      * @param int $pirepid PIREP ID
      * @return
      */
     public static function calculatePIREPPayment($pirepid) {
-        
+
         $pirep = DB::get_row(
-            'SELECT `pirepid`, `pilotid`, 
-                    `flighttime_stamp`, `pilotpay`, 
+            'SELECT `pirepid`, `pilotid`,
+                    `flighttime_stamp`, `pilotpay`,
                 `paytype`, `flighttype`, `accepted`
             FROM `'.TABLE_PREFIX.'pireps`
-            WHERE `pirepid`='.$pirepid        
+            WHERE `pirepid`='.$pirepid
         );
-            
+
         if($pirep->accepted == PIREP_REJECTED) {
             return false;
         }
-                
+
         if($pirep->paytype == PILOT_PAY_HOURLY) {
             # Price out per-hour?
             $peices = explode(':', $pirep->flighttime_stamp);
             $minutes = ($peices[0] * 60) + $peices[1];
             $amount = $minutes * ($pirep->pilotpay / 60);
-            
+
         } elseif($pirep->paytype == PILOT_PAY_SCHEDULE) {
             $amount = $pirep->pilotpay;
         }
-        
+
         $params = array(
             'pirepid' => $pirepid,
             'pilotid' => $pirep->pilotid,
@@ -1277,29 +1278,29 @@ class PIREPData extends CodonData {
             'paytype' => $pirep->paytype,
             'amount' => $amount,
         );
-        
-        $entry = LedgerData::getPaymentByPIREP($pirepid);       
+
+        $entry = LedgerData::getPaymentByPIREP($pirepid);
         if(!$entry) {
             LedgerData::addPayment($params);
         } else {
             LedgerData::editPayment($entry->id, $params);
         }
-        
+
         PilotData::resetPilotPay($pirep->pilotid);
-        
+
         return $amount;
     }
 
     /**
      * Add a comment to the flight report
-     * 
+     *
      * @param int $pirep_id PIREP to add a comment to
      * @param int $user_id User ID the comment is coming from
      * @param string $comment Comment to add
      * @return
      */
     public static function addComment($pirep_id, $user_id, $comment) {
-        
+
         $comment = DB::escape($comment);
         $sql = "INSERT INTO ".TABLE_PREFIX."pirepcomments (`pirepid`, `pilotid`, `comment`, `postdate`)
 					VALUES ($pirep_id, $user_id, '$comment', NOW())";
@@ -1314,7 +1315,7 @@ class PIREPData extends CodonData {
 
     /**
      * PIREPData::getAllFields()
-     * 
+     *
      * @return
      */
     public static function getAllFields() {
@@ -1335,7 +1336,7 @@ class PIREPData extends CodonData {
 
     /**
      * PIREPData::getFieldInfo()
-     * 
+     *
      * @param mixed $id
      * @return
      */
@@ -1348,7 +1349,7 @@ class PIREPData extends CodonData {
 
     /**
      * PIREPData::getFieldValue()
-     * 
+     *
      * @param mixed $fieldid
      * @param mixed $pirepid
      * @return
@@ -1360,18 +1361,18 @@ class PIREPData extends CodonData {
         $ret = DB::get_row($sql);
         return $ret->value;
     }
-    
-    
+
+
     /**
      * Add a custom field to be used in a PIREP
-     * 
+     *
      * @param mixed $title
      * @param string $type
      * @param string $values
      * @return
      */
     public static function addField($title, $type = '', $values = '') {
-        
+
         $fieldname = strtoupper(str_replace(' ', '_', $title));
         //$values = DB::escape($values);
 
@@ -1391,7 +1392,7 @@ class PIREPData extends CodonData {
      * Edit the field
      */
     public static function editField($id, $title, $type, $values = '') {
-        
+
         $fieldname = strtoupper(str_replace(' ', '_', $title));
 
         $sql = "UPDATE ".TABLE_PREFIX."pirepfields
@@ -1409,7 +1410,7 @@ class PIREPData extends CodonData {
      * Save PIREP fields
      */
     public static function saveFields($pirepid, $list) {
-        
+
         if (!is_array($list) || $pirepid == '') return false;
 
         $allfields = self::getAllFields();
@@ -1417,12 +1418,12 @@ class PIREPData extends CodonData {
         if (!$allfields) return true;
 
         foreach ($allfields as $field) {
-            
+
             // See if that value already exists
             $sql = 'SELECT id FROM '.TABLE_PREFIX.'pirepvalues
 					WHERE fieldid='.$field->fieldid.
                         ' AND pirepid=' . $pirepid;
-                    
+
             $res = DB::get_row($sql);
 
             $fieldname = str_replace(' ', '_', $field->name);
@@ -1446,12 +1447,12 @@ class PIREPData extends CodonData {
 
     /**
      * PIREPData::deleteField()
-     * 
+     *
      * @param mixed $id
      * @return
      */
     public static function deleteField($id) {
-        
+
         $sql = 'DELETE FROM ' . TABLE_PREFIX . 'pirepfields WHERE fieldid=' . $id;
 
         $res = DB::query($sql);
@@ -1468,11 +1469,11 @@ class PIREPData extends CodonData {
     /**
      * Show the graph of the past week's reports. Outputs the
      *	image unless $ret == true
-     * 
+     *
      * @deprecated
      */
     public static function showReportCounts($ret = false) {
-        
+
         // Recent PIREP #'s
         $max = 0;
         $data = array();

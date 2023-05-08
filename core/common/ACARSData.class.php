@@ -23,6 +23,18 @@ class ACARSData extends CodonData {
     public static $pirepid;
 
     /**
+     * Get live flight count
+     */
+    public static function getLiveFlightCount($cot = '') { // make sure its not using flights that havent been updated by using cutoff time
+        $cutofftime = (empty($cutofftime)) ? Config::Get('ACARS_LIVE_TIME') : $cot; //ternary operator instead of if argument to reduce lines
+        $sql = 'SELECT COUNT(*) as total FROM ' . TABLE_PREFIX . 'acarsdata';
+        $sql .= ($cutofftime !== 0) ? ' WHERE DATE_SUB(NOW(), INTERVAL ' .$cutofftime .' MINUTE) <= `lastupdate`': '';
+
+        $result = DB::get_row($sql);
+        return $result->total;
+    }
+
+    /**
      * This updates the ACARS live data for a pilot
      *
      * @param mixed $data This is the data structure with flight properties

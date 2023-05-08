@@ -8,13 +8,15 @@ if(!$allaircraft)
 	return;
 }
 ?>
-<table id="tabledlist" class="tablesorter">
+<table id="tabledlist" class="table-sorter">
 <thead>
 <tr>
-	<th>ICAO</th>
-	<th>Name/Type</th>	
-	<th>Full Name</th>
-	<th>Registration</th>
+	<th align="center">ICAO</th>
+	<th align="center">Name/Type</th>
+	<th align="center">Full Name</th>
+	<th align="center">Registration</th>
+    <th align="center">Airline</th>
+	<th align="center">Location</th>
 	<th align="center">Max Pax</th>
 	<th align="center">Max Cargo</th>
 	<th>Options</th>
@@ -30,11 +32,21 @@ foreach($allaircraft as $aircraft)
 	<td align="center"><?php echo $aircraft->name; ?></td>
 	<td align="center"><?php echo $aircraft->fullname; ?></td>
 	<td align="center"><?php echo $aircraft->registration; ?></td>
+    <td align="center"><?php echo $aircraft->airline; ?></td>
+	<td align="center">
+		<?php
+		if ($aircraft->location !== null && $aircraft->location !== "") {
+			echo $aircraft->location;
+		} else {
+			echo "-";
+		}
+		?>
+	</td>
 	<td align="center"><?php echo $aircraft->maxpax; ?></td>
 	<td align="center"><?php echo $aircraft->maxcargo; ?></td>
 	<td align="center" width="1%" nowrap>
-		<button class="{button:{icons:{primary:'ui-icon-wrench'}}}" 
-			onclick="window.location='<?php echo adminurl('/operations/editaircraft?id='.$aircraft->id);?>';">Edit</button>
+		<button class="{button:{icons:{primary:'ui-icon-wrench'}}}"
+			onclick="window.location='<?php echo adminurl('/operations/editaircraft?id='.$aircraft->id.'&icao='.$aircraft->airline);?>';">Edit</button>
 	</td>
 </tr>
 <?php

@@ -3,17 +3,17 @@
  * phpVMS - Virtual Airline Administration Software
  * Copyright (c) 2008 Nabeel Shahzad
  * For more information, visit www.phpvms.net
- *	Forums: http://www.phpvms.net/forum
- *	Documentation: http://www.phpvms.net/docs
+ *	Forums: https://www.phpvms.net/forum
+ *	Documentation: https://www.phpvms.net/docs
  *
  * phpVMS is licenced under the following license:
  *   Creative Commons Attribution Non-commercial Share Alike (by-nc-sa)
- *   View license.txt in the root, or visit http://creativecommons.org/licenses/by-nc-sa/3.0/
+ *   View license.txt in the root, or visit https://creativecommons.org/licenses/by-nc-sa/3.0/
  *
  * @author Nabeel Shahzad
  * @copyright Copyright (c) 2008, Nabeel Shahzad
- * @link http://www.phpvms.net
- * @license http://creativecommons.org/licenses/by-nc-sa/3.0/
+ * @link https://www.phpvms.net
+ * @license https://creativecommons.org/licenses/by-nc-sa/3.0/
  */
 
 /**
@@ -75,7 +75,7 @@ Config::Set('PILOT_AUTO_RETIRE', true);
 Config::Set('PILOT_INACTIVE_TIME', 90);
 
 # Automatically confirm pilots?
-Config::Set('PILOT_AUTO_CONFIRM', false);
+Config::Set('PILOT_AUTO_CONFIRM', true);
 
 # Automatically calculate ranks?
 Config::Set('RANKS_AUTOCALCULATE', true);
@@ -107,7 +107,7 @@ Config::Set('PIREPS_ORDER_BY', 'p.submitdate DESC');
 Config::Set('PILOT_ORDER_BY', 'p.joindate ASC');
 
 # If someone places a bid, whether to disable that or not
-Config::Set('DISABLE_SCHED_ON_BID', true);
+Config::Set('DISABLE_SCHED_ON_BID', false);
 Config::Set('DISABLE_BIDS_ON_BID', false);
 
 # Whether to close any bids after a certain amount of time
@@ -132,11 +132,11 @@ Config::Set('USERS_ONLINE_TIME', 20);
 		YOUR_API_KEY_HERE with your personal Google Maps API key. */
 Config::Set('MAP_WIDTH', '800px');
 Config::Set('MAP_HEIGHT', '600px');
-Config::Set('MAP_TYPE', 'G_PHYSICAL_MAP');
+Config::Set('MAP_TYPE', 'CartoDB.DarkMatter');
 Config::Set('MAP_LINE_COLOR', '#ff0000');
-Config::Set('MAP_CENTER_LAT', '45.484400');
-Config::Set('MAP_CENTER_LNG', '-62.334821');
-Config::Set('MAP_ZOOM_LEVEL', 12);
+Config::Set('MAP_CENTER_LAT', '27.500000');
+Config::Set('MAP_CENTER_LNG', '115.642634');
+Config::Set('MAP_ZOOM_LEVEL', 3);
 
 /* Recaptcha - DO NOT ADD OR MAKE CHANGES TO THE CONTENTS OF THIS FILE!!
 	This version is ReCaptcha v2 compliant. You will need to 
@@ -170,11 +170,11 @@ Config::Set('ACARS_DEBUG', false);
 	Config::Set('MONEY_UNIT', '&#8364;');
  */
 
-Config::Set('MONEY_UNIT', '$');
+Config::Set('MONEY_UNIT', '￥');
 
 /*
  To change the money format, look at:
-  http://us3.php.net/money_format
+  https://us3.php.net/money_format
 
  However, I do not recommend changing this
  */
@@ -188,16 +188,16 @@ Config::Set('MONEY_FORMAT', '%(#10n');
 	for more details about these
 	FUEL_DEFAULT_PRICE is set here for price per pound
 */
-Config::Set('FUEL_DEFAULT_PRICE', '0.78'); 
+Config::Set('FUEL_DEFAULT_PRICE', '6'); 
 Config::Set('FUEL_SURCHARGE', '5');
 
 # Units settings
 #	These are global, also used for FSPAX
-Config::Set('WeightUnit', '1');		# 0=Kg 1=lbs
+Config::Set('WeightUnit', '0');		# 0=Kg 1=lbs
 Config::Set('DistanceUnit', '2');   # 0=KM 1= Miles 2=NMiles
 Config::Set('SpeedUnit', '1');		# 0=Km/H 1=Kts
 Config::Set('AltUnit', '1');		# 0=Meter 1=Feet
-Config::Set('LiquidUnit', '3');		# 0=liter 1=gal 2=kg 3=lbs
+Config::Set('LiquidUnit', '2');		# 0=liter 1=gal 2=kg 3=lbs
 Config::Set('WelcomeMessage', 'phpVMS/FSPAX ACARS'); # Welcome Message
 Config::Set('LIQUID_UNIT_NAMES', array('liter','gal','kg', 'lbs'));
 
@@ -219,15 +219,15 @@ Config::Set('FSFK_IMAGE_PATH', '/lib/fsfk'); // web path from SITE_ROOT
 
 # Options for the signature that's generated
 Config::Set('SIGNATURE_TEXT_COLOR', '#000');
-Config::Set('SIGNATURE_USE_CUSTOM_FONT', true);
+Config::Set('SIGNATURE_USE_CUSTOM_FONT', false);
 Config::Set('SIGNATURE_FONT_PATH', SITE_ROOT.'/lib/fonts/Silkscreen.ttf');
 Config::Set('SIGNATURE_FONT_SIZE', '10');
 Config::Set('SIGNATURE_X_OFFSET', '10');
 Config::Set('SIGNATURE_Y_OFFSET', '17');
 Config::Set('SIGNATURE_FONT_PADDING', 4);
-Config::Set('SIGNATURE_SHOW_EARNINGS', true);
-Config::Set('SIGNATURE_SHOW_RANK_IMAGE', true);
-Config::Set('SIGNATURE_SHOW_COPYRIGHT', true);
+Config::Set('SIGNATURE_SHOW_EARNINGS', false);
+Config::Set('SIGNATURE_SHOW_RANK_IMAGE', false);
+Config::Set('SIGNATURE_SHOW_COPYRIGHT', false);
 
 # Avatar information
 Config::Set('AVATAR_FILE_SIZE', 50000);	# Maximum file-size they can upload
@@ -240,17 +240,17 @@ Config::Set('SESSION_GUEST_EXPIRE', '30'); # Clear guest sessions 30 minutes
 //Config::Set('SESSION_COOKIE_NAME', 'VMS_AUTH_COOKIE');
 
 # Email Settings
-Config::Set('EMAIL_FROM_NAME', '');
-Config::Set('EMAIL_FROM_ADDRESS', '');
+Config::Set('EMAIL_FROM_NAME', 'no-reply');
+Config::Set('EMAIL_FROM_ADDRESS', 'admin@virtualcqh.com');
 
-Config::Set('EMAIL_USE_SMTP', false);
+Config::Set('EMAIL_USE_SMTP', true);
 # Add multiple SMTP servers by separating them with ;
-Config::Set('EMAIL_SMTP_SERVERS', '');
-Config::Set('EMAIL_SMTP_PORT', '25');
-Config::Set('EMAIL_SMTP_USE_AUTH', false);
-Config::Set('EMAIL_SMTP_SECURE', ''); # must be "ssl" for Google Apps
-Config::Set('EMAIL_SMTP_USER', '');
-Config::Set('EMAIL_SMTP_PASS', '');
+Config::Set('EMAIL_SMTP_SERVERS', 'smtp.exmail.qq.com');
+Config::Set('EMAIL_SMTP_PORT', '465');
+Config::Set('EMAIL_SMTP_USE_AUTH', true);
+Config::Set('EMAIL_SMTP_SECURE', 'ssl'); # must be "ssl" for Google Apps
+Config::Set('EMAIL_SMTP_USER', 'admin@virtualcqh.com');
+Config::Set('EMAIL_SMTP_PASS', 'Wj9kBP95V6jeVCDd');
 
 # Set specific email addresses to send notifications to
 Config::Set('EMAIL_NEW_REGISTRATION', '');
@@ -266,9 +266,9 @@ Config::Set('EMAIL_RETURN_PATH', '');
 
 /*	Check the phpVMS forums for status of phpVMS API server and VACentral.
 	As of this release, both are down. Check the forums for additional info */
-Config::Set('PHPVMS_API_SERVER', 'http://api.vacentral.net');
-Config::Set('PHPVMS_NEWS_FEED', 'http://feeds.feedburner.com/phpvms');
-Config::Set('VACENTRAL_NEWS_FEED', 'http://feeds.feedburner.com/vacentral');
+Config::Set('PHPVMS_API_SERVER', 'https://api.vacentral.net');
+Config::Set('PHPVMS_NEWS_FEED', 'https://feeds.feedburner.com/phpvms');
+Config::Set('VACENTRAL_NEWS_FEED', 'https://feeds.feedburner.com/vacentral');
 
 /*	Whether you have the /admin/maintenance.php script added into cron.
 	If you do, set this to true. This saves many DB calls since phpVMS will
@@ -296,7 +296,7 @@ Config::Set('DAYS_LONG',
 	)
 );
 
-Config::Set('SITE_LANGUAGE', 'en');
+Config::Set('SITE_LANGUAGE', 'zh-cn');
 Config::Set('ADMIN_SKIN', 'layout');
 
 
@@ -454,7 +454,7 @@ Config::Set('TABLE_LIST', array(
 Config::Set('VACENTRAL_ENABLED', false);
 Config::Set('VACENTRAL_DEBUG_MODE', false);
 Config::Set('VACENTRAL_DEBUG_DETAIL', 0);
-Config::Set('VACENTRAL_API_SERVER', 'http://api.vacentral.net');
+Config::Set('VACENTRAL_API_SERVER', 'https://api.vacentral.net');
 Config::Set('VACENTRAL_API_KEY', '');
 Config::Set('VACENTRAL_DATA_FORMAT', 'json');
 
@@ -583,7 +583,7 @@ define('ACTIVITY_NEW_AWARD', 4);
 define('ACTIVITY_NEW_BID', 5);
 define('ACTIVITY_TWITTER', 6);
 
-define('TWITTER_STATUS_URL', 'http://api.twitter.com/1/statuses/user_timeline.json?include_entities=0&screen_name=');
+define('TWITTER_STATUS_URL', 'https://api.twitter.com/1/statuses/user_timeline.json?include_entities=0&screen_name=');
 
 define('NAV_NDB', 2);
 define('NAV_VOR', 3);

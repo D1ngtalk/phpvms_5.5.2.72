@@ -648,7 +648,7 @@ class SchedulesData extends CodonData {
 
     public static function getAllBids() {
         $sql = 'SELECT  p.*, s.*, 
-						b.bidid as bidid, b.dateadded, a.name as aircraft, a.registration
+						b.bidid as bidid, b.dateadded, a.name as aircraft, s.aircraft as id, a.registration
 				FROM ' . TABLE_PREFIX . 'schedules s, 
 					 ' . TABLE_PREFIX . 'bids b,
 					 ' . TABLE_PREFIX . 'aircraft a,
